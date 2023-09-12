@@ -4,7 +4,6 @@ import com.amdocs.property.exception.InvalidContactNoException;
 import com.amdocs.property.exception.PropertyException;
 import com.amdocs.property.model.Property;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class App {
@@ -25,7 +24,6 @@ public class App {
         String ownerContactNo;
         System.out.println("Welcome to Property Search System");
         while(true) {
-//        	PropertyDAO pDAO;
         	Property property;
         	
             System.out.println("1. Add new property");
@@ -42,51 +40,52 @@ public class App {
             int choice = sc.nextInt();
             switch(choice) {
             case 1:
-            	System.out.println("To insert a record please enter the following");
-            	System.out.println("Enter property ID: ");
-            	propertyId = sc.nextInt();
-            	System.out.println("Enter no of rooms: ");
-                noOfRooms = sc.next();
-                System.out.println("Enter the area in sqft: ");
-                areaInSqft = sc.nextDouble();
-                System.out.println("Enter the floor number: ");
-                floorNo = sc.nextInt();
-                System.out.println("Enter the city: ");
-                city = sc.next().toLowerCase();
-                System.out.println("Enter the state: ");
-                state = sc.next().toLowerCase();
-                System.out.println("Enter the cost: ");
-                cost = sc.nextDouble();
-                System.out.println("Enter Owner name: ");
-                ownerName = sc.next().toLowerCase();
-                do {
-                System.out.println("Enter Owner number: ");
-                ownerContactNo = sc.next();
-                try {
-					if(ownerContactNo.length()!=10) {
-						throw new InvalidContactNoException("Please provide valid number");
-					}
-				} catch (InvalidContactNoException e) {
-					System.out.println(e);
-				}
-                }while(ownerContactNo.length()!=10);
-                
-//            	pDAO = new PropertyDAO();
-                property = new Property(propertyId,noOfRooms,areaInSqft,floorNo,city,state,cost,ownerName,ownerContactNo);
-                System.out.println(property.toString());
-                try {
-        			int result = pDAO.addProperty(property);
-        			if (result != -1){
-        				System.out.println("Property Added successfully");
-        			}
-        			else {
-						throw new PropertyException("Error in inserting record:(");
-					}
-        		} catch (PropertyException e) {
-        			// TODO Auto-generated catch block
-        			System.out.println(e);
-        		}
-                DBconnection.close();
+            		System.out.println("To insert a record please enter the following");
+                	System.out.println("Enter property ID: ");
+                	propertyId = sc.nextInt();
+                	System.out.println("Enter no of rooms: ");
+                    noOfRooms = sc.next();
+                    System.out.println("Enter the area in sqft: ");
+                    areaInSqft = sc.nextDouble();
+                    System.out.println("Enter the floor number: ");
+                    floorNo = sc.nextInt();
+                    System.out.println("Enter the city: ");
+                    city = sc.next().toLowerCase();
+                    System.out.println("Enter the state: ");
+                    sc.nextLine();
+                    state = sc.nextLine().toLowerCase();
+                    
+                    System.out.println("Enter the cost: ");
+                    cost = sc.nextDouble();
+                    System.out.println("Enter Owner name: ");
+                    sc.nextLine();
+                    ownerName = sc.nextLine().toLowerCase();
+                    
+                    do {
+                    System.out.println("Enter Owner number: ");
+                    ownerContactNo = sc.next();
+                    try {
+    					if(ownerContactNo.length()!=10) {
+    						throw new InvalidContactNoException("Please provide valid number");
+    					}
+    				} catch (InvalidContactNoException e) {
+    					System.out.println(e);
+    				}
+                    }while(ownerContactNo.length()!=10);
+                    property = new Property(propertyId,noOfRooms,areaInSqft,floorNo,city,state,cost,ownerName,ownerContactNo);
+                    System.out.println(property.toString());
+                    try {
+            			int result = pDAO.addProperty(property);
+            			if (result != -1){
+            				System.out.println("Property Added successfully");
+            				DBconnection.close();
+            			}
+            			else {
+    						throw new PropertyException("Error in inserting record:(");
+    					}
+            		} catch (PropertyException e) {
+            			System.out.println(e);
+            		}
             	break;
             	
             case 2:
@@ -94,7 +93,6 @@ public class App {
             	propertyId = sc.nextInt();
             	System.out.println("Enter the cost: ");
                 cost = sc.nextDouble();
-//                pDAO = new PropertyDAO();
                 try {
         			boolean result = pDAO.updatePropertyCost(propertyId,cost);
         			if (result){
@@ -104,7 +102,6 @@ public class App {
         				throw new PropertyException("Issue in updating record.Please enter correct values");
         			}
         		} catch (PropertyException e) {
-        			// TODO Auto-generated catch block
         			System.out.println(e);
         		}
                 DBconnection.close();
@@ -112,7 +109,6 @@ public class App {
             case 3:
             	System.out.println("Enter the Property ID you want to delete: ");
             	propertyId = sc.nextInt();
-//                pDAO = new PropertyDAO();
                 try {
         			int result = pDAO.deleteProperty(propertyId);
         			if (result!=-1)
@@ -123,7 +119,6 @@ public class App {
         				throw new PropertyException("Please mention correct ID. Property Not found");
         			}
         		} catch (PropertyException e) {
-        			// TODO Auto-generated catch block
         			System.out.println(e);
         		}
                 DBconnection.close();
@@ -131,15 +126,13 @@ public class App {
             case 4:
             	System.out.println("Enter the city: ");
             	city = sc.next();
-//            	pDAO = new PropertyDAO();
                 try {
         			List<Property> result = pDAO.searchByCity(city);
         			if (!result.isEmpty()){
         				System.out.println("Property found successfully");
-        				for (int i=0;i<result.size();i++){
-        					System.out.println(result.get(i).toString());
+        				for(Property p: result) {
+        					System.out.println(p.toString());
         				}
-        				
         			}
         			else {
         				throw new PropertyException("City not found!!");
@@ -151,11 +144,11 @@ public class App {
                break;
             case 5:
                 try {
-        			List<Property> resut = pDAO.showAllProperties();
-        			if (!resut.isEmpty()){
+        			List<Property> result = pDAO.showAllProperties();
+        			if (!result.isEmpty()){
         				System.out.println("Properties found successfully");
-        				for (int i=0;i<resut.size();i++){
-        					System.out.println(resut.get(i).toString());
+        				for(Property p: result) {
+        					System.out.println(p.toString());
         				}
         			}
         			else {
@@ -176,9 +169,8 @@ public class App {
         			List<Property> result = pDAO.searchByCost(mincost,maxcost);
         			if (!result.isEmpty()){
         				System.out.println("Property found successfully");
-        				for (int i=0;i<result.size();i++)
-        				{
-        					System.out.println(result.get(i).toString());
+        				for(Property p: result) {
+        					System.out.println(p.toString());
         				}
         			}
         			else {
@@ -196,11 +188,10 @@ public class App {
             	city = sc.next();
                 try {
         			List<Property> result = pDAO.searchByNoOfRoomsAndCity(noOfRooms,city);
-        			
         			if (!result.isEmpty()){
         				System.out.println("Property found successfully");
-        				for (int i=0;i<result.size();i++){
-        					System.out.println(result.get(i).toString());
+        				for(Property p: result) {
+        					System.out.println(p.toString());
         				}
         			}
         			else {
@@ -218,10 +209,7 @@ public class App {
             default:
                 System.out.println("Invalid choice. Please try again.");	
             }
-//            sc.close();
-            
-        } 
-        
-	}
-	
+//            sc.close();  
+        }    
+	}	
 }
